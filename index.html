@@ -1,1448 +1,1377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bharat KYC - Lightweight KYC Platform</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #1e293b;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: white;
-            box-shadow: 0 0 40px rgba(0,0,0,0.1);
-        }
-
-        .header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .language-selector {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-        }
-
-        .main-content {
-            padding: 3rem 2rem;
-        }
-
-        .screen {
-            display: none;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        .progress-section {
-            margin-bottom: 3rem;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .step-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .step-description {
-            font-size: 1.1rem;
-            color: #64748b;
-            text-align: center;
-            margin-bottom: 3rem;
-            line-height: 1.6;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .option-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .option-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 3px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .option-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-
-        .option-card.selected {
-            border-color: #4f46e5;
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            transform: translateY(-5px);
-        }
-
-        .option-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            flex-shrink: 0;
-        }
-
-        .option-content h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
-        .option-content p {
-            font-size: 1rem;
-            color: #64748b;
-            line-height: 1.5;
-        }
-
-        .upload-section {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-        }
-
-        .document-upload {
-            border: 3px dashed #cbd5e1;
-            border-radius: 20px;
-            padding: 3rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: #f8fafc;
-        }
-
-        .document-upload:hover {
-            border-color: #4f46e5;
-            background: #f0f9ff;
-        }
-
-        .document-upload.dragover {
-            border-color: #4f46e5;
-            background: #f0f9ff;
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-            margin: 0 auto 1.5rem;
-        }
-
-        .camera-container {
-            background: #000;
-            border-radius: 20px;
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .camera-placeholder {
-            color: white;
-            text-align: center;
-        }
-
-        .camera-placeholder i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .camera-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            height: 200px;
-            border: 3px solid white;
-            border-radius: 15px;
-        }
-
-        .capture-btn {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border: 5px solid #4f46e5;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #4f46e5;
-        }
-
-        .capture-btn:hover {
-            transform: translateX(-50%) scale(1.1);
-        }
-
-        .action-button {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 0.5rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            min-width: 200px;
-        }
-
-        .action-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
-        }
-
-        .action-button.secondary {
-            background: white;
-            color: #4f46e5;
-            border: 2px solid #4f46e5;
-        }
-
-        .action-button.secondary:hover {
-            background: #4f46e5;
-            color: white;
-        }
-
-        .action-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .sync-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: rgba(16, 185, 129, 0.1);
-            color: #065f46;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        .sync-status.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #92400e;
-        }
-
-        .sync-status.uploading {
-            background: rgba(59, 130, 246, 0.1);
-            color: #1e40af;
-        }
-
-        .completion-screen {
-            text-align: center;
-            padding: 3rem 0;
-        }
-
-        .success-icon {
-            width: 150px;
-            height: 150px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 4rem;
-            margin: 0 auto 2rem;
-        }
-
-        .info-box {
-            background: rgba(16, 185, 129, 0.1);
-            color: #065f46;
-            padding: 2rem;
-            border-radius: 20px;
-            margin: 2rem 0;
-            text-align: left;
-        }
-
-        .info-box h4 {
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-        }
-
-        .info-box ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .info-box li {
-            margin: 0.75rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .navigation {
-            padding: 2rem;
-            background: #f8fafc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .nav-back {
-            background: #e2e8f0;
-            color: #64748b;
-            border: none;
-            border-radius: 12px;
-            padding: 1rem 2rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .nav-back:hover {
-            background: #cbd5e1;
-        }
-
-        .nav-back:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .floating-controls {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 1000;
-        }
-
-        .floating-btn {
-            width: 60px;
-            height: 60px;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-
-        .voice-control {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .chatbot-toggle {
-            background: linear-gradient(135deg, #06b6d4, #0891b2);
-        }
-
-        .floating-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .voice-control.listening {
-            background: #10b981;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .chatbot-overlay {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            height: 60%;
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            z-index: 2000;
-            padding: 2rem;
-        }
-
-        .chatbot-overlay.active {
-            transform: translateY(0);
-        }
-
-        .chatbot-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .chatbot-header h3 {
-            font-size: 1.5rem;
-            color: #1e293b;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #64748b;
-        }
-
-        .chat-messages {
-            height: 300px;
-            overflow-y: auto;
-            margin-bottom: 1.5rem;
-            padding-right: 1rem;
-        }
-
-        .chat-message {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            border-radius: 15px;
-            max-width: 80%;
-            line-height: 1.5;
-        }
-
-        .chat-message.bot {
-            background: #f1f5f9;
-            color: #1e293b;
-        }
-
-        .chat-message.user {
-            background: #4f46e5;
-            color: white;
-            margin-left: auto;
-        }
-
-        .chat-input-container {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        .chat-input:focus {
-            border-color: #4f46e5;
-        }
-
-        .chat-send {
-            width: 50px;
-            height: 50px;
-            background: #4f46e5;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-
-        .chat-send:hover {
-            background: #3730a3;
-            transform: scale(1.05);
-        }
-
-        .tip-box {
-            background: rgba(79, 70, 229, 0.1);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-top: 2rem;
-            border-left: 4px solid #4f46e5;
-        }
-
-        .tip-box strong {
-            color: #4f46e5;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .step-title {
-                font-size: 2rem;
-            }
-            
-            .option-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .option-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .main-content {
-                padding: 2rem 1rem;
-            }
-            
-            .language-selector {
-                position: static;
-                margin-bottom: 1rem;
-            }
-
-            .navigation {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat KYC - Lightweight KYC Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-content {
+            padding: 3rem 2rem;
+        }
+
+        .screen {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .progress-section {
+            margin-bottom: 3rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .step-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .option-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .option-card.selected {
+            border-color: #4f46e5;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            transform: translateY(-5px);
+        }
+
+        .option-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .option-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-content p {
+            font-size: 1rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        .document-upload {
+            border: 3px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        .document-upload:hover {
+            border-color: #4f46e5;
+            background: #f0f9ff;
+        }
+
+        .document-upload.dragover {
+            border-color: #4f46e5;
+            background: #f0f9ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .camera-container {
+            background: #000;
+            border-radius: 20px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-placeholder {
+            color: white;
+            text-align: center;
+        }
+
+        .camera-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 200px;
+            border: 3px solid white;
+            border-radius: 15px;
+        }
+
+        .capture-btn {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border: 5px solid #4f46e5;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #4f46e5;
+        }
+
+        .capture-btn:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-width: 200px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .action-button.secondary {
+            background: white;
+            color: #4f46e5;
+            border: 2px solid #4f46e5;
+        }
+
+        .action-button.secondary:hover {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .sync-status.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+        }
+
+        .sync-status.uploading {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+        }
+
+        .completion-screen {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .success-icon {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            margin: 0 auto 2rem;
+        }
+
+        .info-box {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .info-box h4 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box li {
+            margin: 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .navigation {
+            padding: 2rem;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-back {
+            background: #e2e8f0;
+            color: #64748b;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-back:hover {
+            background: #cbd5e1;
+        }
+
+        .nav-back:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .floating-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .voice-control {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .chatbot-toggle {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-control.listening {
+            background: #10b981;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .chatbot-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            height: 60%;
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+            padding: 2rem;
+        }
+
+        .chatbot-overlay.active {
+            transform: translateY(0);
+        }
+
+        .chatbot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .chatbot-header h3 {
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            padding-right: 1rem;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 15px;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+
+        .chat-message.bot {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .chat-message.user {
+            background: #4f46e5;
+            color: white;
+            margin-left: auto;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .chat-input:focus {
+            border-color: #4f46e5;
+        }
+
+        .chat-send {
+            width: 50px;
+            height: 50px;
+            background: #4f46e5;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .chat-send:hover {
+            background: #3730a3;
+            transform: scale(1.05);
+        }
+
+        .tip-box {
+            background: rgba(79, 70, 229, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .tip-box strong {
+            color: #4f46e5;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .step-title {
+                font-size: 2rem;
+            }
+            
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .option-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .main-content {
+                padding: 2rem 1rem;
+            }
+            
+            .language-selector {
+                position: static;
+                margin-bottom: 1rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-                <div class="header">
-            <select class="language-selector" id="languageSelect">
-                <option value="en">English</option>
-                <option value="hi">हिंदी</option>
-                <option value="gu">ગુજરાતી</option>
-                <option value="ta">தமிழ்</option>
-            </select>
-            <h1>Bharat KYC</h1>
-            <p>Secure & Simple Identity Verification Platform</p>
-        </div>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <select class="language-selector" id="languageSelect">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="ta">தமிழ்</option>
+            </select>
+            <h1>Bharat KYC</h1>
+            <p>Secure & Simple Identity Verification Platform</p>
+        </div>
 
-                <div class="main-content">
-                        <div class="screen active" id="screen1">
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 16%"></div>
-                    </div>
-                    <div class="progress-text">Step 1 of 6 - Welcome</div>
-                </div>
-                
-                <div class="step-title">Welcome to Bharat KYC</div>
-                <div class="step-description">Complete your identity verification quickly and securely. Our platform is designed to be accessible for everyone, with voice guidance and multilingual support.</div>
-                
-                <div class="sync-status" id="syncStatus">
-                    <i class="fas fa-wifi"></i>
-                    <span>Connected - Ready to proceed</span>
-                </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Screen 1: Welcome -->
+            <div class="screen active" id="screen1">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 16%"></div>
+                    </div>
+                    <div class="progress-text">Step 1 of 6 - Welcome</div>
+                </div>
+                
+                <div class="step-title">Welcome to Bharat KYC</div>
+                <div class="step-description">Complete your identity verification quickly and securely. Our platform is designed to be accessible for everyone, with voice guidance and multilingual support.</div>
+                
+                <div class="sync-status" id="syncStatus">
+                    <i class="fas fa-wifi"></i>
+                    <span>Connected - Ready to proceed</span>
+                </div>
 
-                <div class="option-grid">
-                    <div class="option-card" onclick="selectOption(this, 'start')">
-                        <div class="option-icon">
-                            <i class="fas fa-id-card"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Start KYC Process</h3>
-                            <p>Begin your identity verification journey with our guided process</p>
-                        </div>
-                    </div>
+                <div class="option-grid">
+                    <div class="option-card" onclick="selectOption(this, 'start')">
+                        <div class="option-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="option-content">
+                            <h3>Start KYC Process</h3>
+                            <p>Begin your identity verification journey with our guided process</p>
+                        </div>
+                    </div>
 
-                    <div class="option-card" onclick="selectOption(this, 'status')">
-                        <div class="option-icon">
-                            <i class="fas fa-history"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Check Status</h3>
-                            <p>View your existing application status and get updates</p>
-                        </div>
-                    </div>
+                    <div class="option-card" onclick="selectOption(this, 'status')">
+                        <div class="option-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="option-content">
+                            <h3>Check Status</h3>
+                            <p>View your existing application status and get updates</p>
+                        </div>
+                    </div>
 
-                    <div class="option-card" onclick="selectOption(this, 'help')">
-                        <div class="option-icon">
-                            <i class="fas fa-question-circle"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Get Help</h3>
-                            <p>Learn about the KYC process and get assistance</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <div class="option-card" onclick="selectOption(this, 'help')">
+                        <div class="option-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="option-content">
+                            <h3>Get Help</h3>
+                            <p>Learn about the KYC process and get assistance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="screen" id="screen2">
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 33%"></div>
-                    </div>
-                    <div class="progress-text">Step 2 of 6 - Document Selection</div>
-                </div>
-                
-                <div class="step-title">Select Document Type</div>
-                <div class="step-description">Choose the government-issued document you want to use for verification. Make sure you have the physical document ready.</div>
+            <!-- Screen 2: Document Selection -->
+            <div class="screen" id="screen2">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 33%"></div>
+                    </div>
+                    <div class="progress-text">Step 2 of 6 - Document Selection</div>
+                </div>
+                
+                <div class="step-title">Select Document Type</div>
+                <div class="step-description">Choose the government-issued document you want to use for verification. Make sure you have the physical document ready.</div>
 
-                <div class="option-grid">
-                    <div class="option-card" onclick="selectDocument('aadhar', this)">
-                        <div class="option-icon">
-                            <i class="fas fa-id-card"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Aadhaar Card</h3>
-                            <p>12-digit unique identity number issued by UIDAI</p>
-                        </div>
-                    </div>
+                <div class="option-grid">
+                    <div class="option-card" onclick="selectDocument('aadhar', this)">
+                        <div class="option-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="option-content">
+                            <h3>Aadhaar Card</h3>
+                            <p>12-digit unique identity number issued by UIDAI</p>
+                        </div>
+                    </div>
 
-                    <div class="option-card" onclick="selectDocument('pan', this)">
-                        <div class="option-icon">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>PAN Card</h3>
-                            <p>Permanent Account Number card issued by Income Tax Department</p>
-                        </div>
-                    </div>
+                    <div class="option-card" onclick="selectDocument('pan', this)">
+                        <div class="option-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="option-content">
+                            <h3>PAN Card</h3>
+                            <p>Permanent Account Number card issued by Income Tax Department</p>
+                        </div>
+                    </div>
 
-                    <div class="option-card" onclick="selectDocument('passport', this)">
-                        <div class="option-icon">
-                            <i class="fas fa-passport"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Passport</h3>
-                            <p>International travel document with photo identification</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <div class="option-card" onclick="selectDocument('passport', this)">
+                        <div class="option-icon">
+                            <i class="fas fa-passport"></i>
+                        </div>
+                        <div class="option-content">
+                            <h3>Passport</h3>
+                            <p>International travel document with photo identification</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="screen" id="screen3">
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 50%"></div>
-                    </div>
-                    <div class="progress-text">Step 3 of 6 - Document Upload</div>
-                </div>
-                
-                <div class="step-title">Upload Your Document</div>
-                <div class="step-description">Take a clear photo of your document or upload from your device. Our AI will validate the document quality automatically.</div>
+            <!-- Screen 3: Document Upload -->
+            <div class="screen" id="screen3">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                    <div class="progress-text">Step 3 of 6 - Document Upload</div>
+                </div>
+                
+                <div class="step-title">Upload Your Document</div>
+                <div class="step-description">Take a clear photo of your document or upload from your device. Our AI will validate the document quality automatically.</div>
 
-                <div class="upload-section">
-                    <div class="document-upload" onclick="triggerFileUpload()">
-                        <div class="upload-icon">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                        <h3>Take Photo or Upload</h3>
-                        <p>Click here to capture or select document image</p>
-                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-                    </div>
+                <div class="upload-section">
+                    <div class="document-upload" onclick="triggerFileUpload()">
+                        <div class="upload-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h3>Take Photo or Upload</h3>
+                        <p>Click here to capture or select document image</p>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                    </div>
 
-                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                        <button class="action-button secondary" onclick="startCamera()">
-                            <i class="fas fa-camera"></i>
-                            Open Camera
-                        </button>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button class="action-button secondary" onclick="openCamera()">
+                            <i class="fas fa-camera"></i>
+                            Open Camera
+                        </button>
 
-                        <button class="action-button secondary" onclick="triggerFileUpload()">
-                            <i class="fas fa-folder-open"></i>
-                            Choose from Device
-                        </button>
-                    </div>
-                </div>
+                        <button class="action-button secondary" onclick="triggerFileUpload()">
+                            <i class="fas fa-folder-open"></i>
+                            Choose from Device
+                        </button>
+                    </div>
+                </div>
 
-                <div class="tip-box">
-                    <i class="fas fa-lightbulb"></i>
-                    <strong>Tips for best results:</strong> Ensure good lighting, keep the document flat, and make sure all text is clearly visible.
-                </div>
-            </div>
+                <div class="tip-box">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Tips for best results:</strong> Ensure good lighting, keep the document flat, and make sure all text is clearly visible.
+                </div>
+            </div>
 
-                        <div class="screen" id="screen4">
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 66%"></div>
-                    </div>
-                    <div class="progress-text">Step 4 of 6 - Document Capture</div>
-                </div>
-                
-                <div class="step-title">Capture Document</div>
-                <div class="step-description">Position your document within the frame below and click the capture button when ready.</div>
+            <!-- Screen 4: Camera View -->
+            <div class="screen" id="screen4">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 66%"></div>
+                    </div>
+                    <div class="progress-text">Step 4 of 6 - Document Capture</div>
+                </div>
+                
+                <div class="step-title">Capture Document</div>
+                <div class="step-description">Position your document within the frame below and click the capture button when ready.</div>
 
-                <div class="camera-container">
-                    <video id="videoElement" autoplay playsinline style="display: none;"></video>
-                    <div class="camera-placeholder" id="cameraPlaceholder">
-                        <i class="fas fa-camera"></i>
-                        <div style="font-size: 1.5rem; margin-top: 1rem;">Camera View</div>
-                        <div style="font-size: 1rem; margin-top: 0.5rem; opacity: 0.8;">Align your document with the frame</div>
-                    </div>
-                    <div class="camera-overlay"></div>
-                    <div class="capture-btn" onclick="captureDocument()">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                </div>
+                <div class="camera-container">
+                    <div class="camera-placeholder">
+                        <i class="fas fa-camera"></i>
+                        <div style="font-size: 1.5rem; margin-top: 1rem;">Camera View</div>
+                        <div style="font-size: 1rem; margin-top: 0.5rem; opacity: 0.8;">Align your document with the frame</div>
+                    </div>
+                    <div class="camera-overlay"></div>
+                    <div class="capture-btn" onclick="captureDocument()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
 
-                <div class="tip-box">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>Document Guidelines:</strong> Make sure the entire document fits within the frame and all corners are visible.
-                </div>
-            </div>
+                <div class="tip-box">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Document Guidelines:</strong> Make sure the entire document fits within the frame and all corners are visible.
+                </div>
+            </div>
 
-                        <div class="screen" id="screen5">
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 83%"></div>
-                    </div>
-                    <div class="progress-text">Step 5 of 6 - Face Verification</div>
-                </div>
-                
-                <div class="step-title">Face Verification</div>
-                <div class="step-description">Complete the liveness check by following the on-screen instructions. This ensures your identity matches the document.</div>
+            <!-- Screen 5: Face Verification -->
+            <div class="screen" id="screen5">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 83%"></div>
+                    </div>
+                    <div class="progress-text">Step 5 of 6 - Face Verification</div>
+                </div>
+                
+                <div class="step-title">Face Verification</div>
+                <div class="step-description">Complete the liveness check by following the on-screen instructions. This ensures your identity matches the document.</div>
 
-                <div class="camera-container">
-                    <div class="camera-placeholder">
-                        <i class="fas fa-user-circle"></i>
-                        <div style="font-size: 1.5rem; margin-top: 1rem;">Position your face in the circle</div>
-                        <div style="font-size: 1rem; margin-top: 0.5rem; opacity: 0.8;">Follow the prompts for verification</div>
-                    </div>
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 4px solid white; border-radius: 50%;"></div>
-                    <div class="capture-btn" onclick="startFaceVerification()">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
+                <div class="camera-container">
+                    <div class="camera-placeholder">
+                        <i class="fas fa-user-circle"></i>
+                        <div style="font-size: 1.5rem; margin-top: 1rem;">Position your face in the circle</div>
+                        <div style="font-size: 1rem; margin-top: 0.5rem; opacity: 0.8;">Follow the prompts for verification</div>
+                    </div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 4px solid white; border-radius: 50%;"></div>
+                    <div class="capture-btn" onclick="startFaceVerification()">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
 
-                <div class="info-box">
-                    <i class="fas fa-shield-alt"></i>
-                    <strong>Privacy Protected:</strong> Your face data is processed securely using advanced AI and is not stored permanently.
-                </div>
-            </div>
+                <div class="info-box">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Privacy Protected:</strong> Your face data is processed securely using advanced AI and is not stored permanently.
+                </div>
+            </div>
 
-                        <div class="screen" id="screen6">
-                <div class="progress-section">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 100%"></div>
-                    </div>
-                    <div class="progress-text">Step 6 of 6 - Complete</div>
-                </div>
-                
-                <div class="completion-screen">
-                    <div class="success-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div class="step-title">Verification Complete!</div>
-                    <div class="step-description">Your KYC application has been submitted successfully. Our team will review your documents and notify you of the status.</div>
+            <!-- Screen 6: Completion -->
+            <div class="screen" id="screen6">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-text">Step 6 of 6 - Complete</div>
+                </div>
+                
+                <div class="completion-screen">
+                    <div class="success-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="step-title">Verification Complete!</div>
+                    <div class="step-description">Your KYC application has been submitted successfully. Our team will review your documents and notify you of the status.</div>
 
-                    <div class="info-box">
-                        <h4><i class="fas fa-clock"></i> What happens next?</h4>
-                        <ul>
-                            <li>
-                                <i class="fas fa-check-circle" style="color: #10b981;"></i>
-                                <span>Documents submitted for review</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-clock" style="color: #f59e0b;"></i>
-                                <span>Verification process: 24-48 hours</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-bell" style="color: #06b6d4;"></i>
-                                <span>SMS and email notifications sent</span>
-                            </li>
-                            <li>
-                                <i class="fas fa-certificate" style="color: #8b5cf6;"></i>
-                                <span>Digital certificate upon approval</span>
-                            </li>
-                        </ul>
-                    </div>
+                    <div class="info-box">
+                        <h4><i class="fas fa-clock"></i> What happens next?</h4>
+                        <ul>
+                            <li>
+                                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                                <span>Documents submitted for review</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-clock" style="color: #f59e0b;"></i>
+                                <span>Verification process: 24-48 hours</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-bell" style="color: #06b6d4;"></i>
+                                <span>SMS and email notifications sent</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-certificate" style="color: #8b5cf6;"></i>
+                                <span>Digital certificate upon approval</span>
+                            </li>
+                        </ul>
+                    </div>
 
-                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
-                        <button class="action-button" onclick="goToHome()">
-                            <i class="fas fa-home"></i>
-                            Return to Home
-                        </button>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                        <button class="action-button" onclick="goToHome()">
+                            <i class="fas fa-home"></i>
+                            Return to Home
+                        </button>
 
-                        <button class="action-button secondary" onclick="shareResult()">
-                            <i class="fas fa-share"></i>
-                            Share Status
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <button class="action-button secondary" onclick="shareResult()">
+                            <i class="fas fa-share"></i>
+                            Share Status
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="navigation">
-            <button class="nav-back" onclick="goBack()" id="backBtn" disabled>
-                <i class="fas fa-arrow-left"></i> Previous Step
-            </button>
-            <button class="action-button" onclick="goNext()" id="nextBtn" disabled>
-                Next Step <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-back" onclick="goBack()" id="backBtn" disabled>
+                <i class="fas fa-arrow-left"></i> Previous Step
+            </button>
+            <button class="action-button" onclick="goNext()" id="nextBtn" disabled>
+                Next Step <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
 
-                <div class="floating-controls">
-            <button class="floating-btn voice-control" onclick="toggleVoice()" id="voiceBtn" title="Voice Assistance">
-                <i class="fas fa-microphone"></i>
-            </button>
+        <!-- Floating Controls -->
+        <div class="floating-controls">
+            <button class="floating-btn voice-control" onclick="toggleVoice()" id="voiceBtn" title="Voice Assistance">
+                <i class="fas fa-microphone"></i>
+            </button>
 
-            <button class="floating-btn chatbot-toggle" onclick="toggleChatbot()" title="AI Help">
-                <i class="fas fa-robot"></i>
-            </button>
-        </div>
+            <button class="floating-btn chatbot-toggle" onclick="toggleChatbot()" title="AI Help">
+                <i class="fas fa-robot"></i>
+            </button>
+        </div>
 
-                <div class="chatbot-overlay" id="chatbotOverlay">
-            <div class="chatbot-header">
-                <h3><i class="fas fa-robot"></i> AI Assistant</h3>
-                <button class="close-btn" onclick="toggleChatbot()">&times;</button>
-            </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="chat-message bot">
-                    <div>Hello! I'm your KYC assistant. How can I help you today?</div>
-                </div>
-            </div>
-            <div class="chat-input-container">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here..." onkeypress="handleChatEnter(event)">
-                <button class="chat-send" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <canvas id="canvasElement" style="display: none;"></canvas>
+        <!-- Chatbot Overlay -->
+        <div class="chatbot-overlay" id="chatbotOverlay">
+            <div class="chatbot-header">
+                <h3><i class="fas fa-robot"></i> AI Assistant</h3>
+                <button class="close-btn" onclick="toggleChatbot()">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div>Hello! I'm your KYC assistant. How can I help you today?</div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here..." onkeypress="handleChatEnter(event)">
+                <button class="chat-send" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        // Global state variables
-        let currentScreen = 1;
-        let selectedOption = null;
-        let selectedDocument = null;
-        let uploadedFile = null;
-        let isVoiceListening = false;
-        let isChatbotOpen = false;
-        let cameraStream = null;
+    <script>
+        // Global state variables
+        let currentScreen = 1;
+        let selectedOption = null;
+        let selectedDocument = null;
+        let uploadedFile = null;
+        let isVoiceListening = false;
+        let isChatbotOpen = false;
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            updateNavigation();
-            setupDragAndDrop();
-            initializeLanguage();
-        });
-
-        // Language support
-        function initializeLanguage() {
-            const langSelect = document.getElementById('languageSelect');
-            langSelect.addEventListener('change', function(e) {
-                changeLanguage(e.target.value);
-            });
-        }
-
-        function changeLanguage(lang) {
-            // Language change functionality - would connect to translation service
-            console.log('Language changed to:', lang);
-            // In a real application, this would update all text content
-        }
-
-        // Screen navigation functions
-        function goNext() {
-            if (currentScreen < 6) {
-                // Validate current screen before proceeding
-                if (validateCurrentScreen()) {
-                    hideScreen(currentScreen);
-                    currentScreen++;
-                    showScreen(currentScreen);
-                    updateNavigation();
-                    updateProgress();
-                }
-            }
-        }
-
-        function goBack() {
-            // Stop the camera before navigating back
-            stopCamera();
-
-            if (currentScreen > 1) {
-                hideScreen(currentScreen);
-                currentScreen--;
-                showScreen(currentScreen);
-                updateNavigation();
-                updateProgress();
-            }
-        }
-
-        function showScreen(screenNumber) {
-            const screen = document.getElementById(`screen${screenNumber}`);
-            if (screen) {
-                screen.classList.add('active');
-            }
-        }
-
-        function hideScreen(screenNumber) {
-            const screen = document.getElementById(`screen${screenNumber}`);
-            if (screen) {
-                screen.classList.remove('active');
-            }
-        }
-
-        function updateNavigation() {
-            const backBtn = document.getElementById('backBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            // Back button
-            backBtn.disabled = currentScreen === 1;
-            
-            // Next button
-            nextBtn.disabled = !canProceed();
-            
-            // Update next button text for final screen
-            if (currentScreen === 6) {
-                nextBtn.style.display = 'none';
-            } else {
-                nextBtn.style.display = 'inline-flex';
-            }
-        }
-
-        function updateProgress() {
-            const progressFill = document.querySelector('.progress-fill');
-            const progressText = document.querySelector('.progress-text');
-            
-            const progressPercentage = (currentScreen / 6) * 100;
-            if (progressFill) {
-                progressFill.style.width = progressPercentage + '%';
-            }
-        }
-
-        function canProceed() {
-            switch (currentScreen) {
-                case 1:
-                    return selectedOption !== null;
-                case 2:
-                    return selectedDocument !== null;
-                case 3:
-                    return uploadedFile !== null;
-                case 4:
-                    return uploadedFile !== null; // After capture
-                case 5:
-                    return true; // Face verification
-                case 6:
-                    return false; // Final screen
-                default:
-                    return false;
-            }
-        }
-
-        function validateCurrentScreen() {
-            return canProceed();
-        }
-
-        // Option selection functions
-        function selectOption(element, option) {
-            // Remove previous selections
-            document.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Add selection to clicked card
-            element.classList.add('selected');
-            selectedOption = option;
-            
-            updateNavigation();
-            
-            // Auto-proceed after a short delay
-            setTimeout(() => {
-                if (canProceed()) {
-                    goNext();
-                }
-            }, 500);
-        }
-
-        function selectDocument(docType, element) {
-            // Remove previous selections
-            document.querySelectorAll('#screen2 .option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Add selection to clicked card
-            element.classList.add('selected');
-            selectedDocument = docType;
-            
-            updateNavigation();
-            
-            // Auto-proceed after a short delay
-            setTimeout(() => {
-                if (canProceed()) {
-                    goNext();
-                }
-            }, 500);
-        }
-
-        // File upload functions
-        function triggerFileUpload() {
-            document.getElementById('fileInput').click();
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                uploadedFile = file;
-                showFilePreview(file);
-                updateSyncStatus('uploading', 'Uploading document...');
-                
-                // Simulate upload process
-                setTimeout(() => {
-                    updateSyncStatus('success', 'Document uploaded successfully');
-                    updateNavigation();
-                }, 2000);
-            } else {
-                alert('Please select a valid image file.');
-            }
-        }
-
-        function showFilePreview(file) {
-            const uploadArea = document.querySelector('.document-upload');
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                uploadArea.innerHTML = `
-                    <div class="upload-icon" style="background: #10b981;">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <h3>Document Uploaded</h3>
-                    <p>${file.name}</p>
-                    <img src="${e.target.result}" style="max-width: 200px; max-height: 150px; margin-top: 1rem; border-radius: 10px;">
-                `;
-            };
-            
-            reader.readAsDataURL(file);
-        }
-
-        function updateSyncStatus(type, message) {
-            const syncStatus = document.getElementById('syncStatus');
-            const icons = {
-                'success': 'fa-check-circle',
-                'uploading': 'fa-spinner fa-spin',
-                'pending': 'fa-clock'
-            };
-            
-            syncStatus.className = `sync-status ${type}`;
-            syncStatus.innerHTML = `
-                <i class="fas ${icons[type]}"></i>
-                <span>${message}</span>
-            `;
-        }
-
-        // Camera functions
-        async function startCamera() {
-            hideScreen(currentScreen);
-            currentScreen++;
-            showScreen(currentScreen);
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
             updateNavigation();
-            updateProgress();
+            setupDragAndDrop();
+            initializeLanguage();
+        });
 
-            const videoElement = document.getElementById('videoElement');
-            const placeholder = document.getElementById('cameraPlaceholder');
+        // Language support
+        function initializeLanguage() {
+            const langSelect = document.getElementById('languageSelect');
+            langSelect.addEventListener('change', function(e) {
+                changeLanguage(e.target.value);
+            });
+        }
 
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                placeholder.style.display = 'none';
-                videoElement.style.display = 'block';
-                videoElement.srcObject = stream;
-                cameraStream = stream;
-            } catch (error) {
-                console.error("Error accessing the camera:", error);
-                alert("Unable to access your camera. Please ensure you have granted permission and try again.");
-                videoElement.style.display = 'none';
-                placeholder.style.display = 'block';
-                placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i>
-                                         <div style="font-size: 1.5rem; margin-top: 1rem;">Camera Error</div>
-                                         <div style="font-size: 1rem; margin-top: 0.5rem; opacity: 0.8;">${error.name}: ${error.message}</div>`;
-                // Set uploadedFile to null to prevent proceeding if camera fails
-                uploadedFile = null;
-                updateNavigation();
+        function changeLanguage(lang) {
+            // Language change functionality - would connect to translation service
+            console.log('Language changed to:', lang);
+            // In a real application, this would update all text content
+        }
+
+        // Screen navigation functions
+        function goNext() {
+            if (currentScreen < 6) {
+                // Validate current screen before proceeding
+                if (validateCurrentScreen()) {
+                    hideScreen(currentScreen);
+                    currentScreen++;
+                    showScreen(currentScreen);
+                    updateNavigation();
+                    updateProgress();
+                }
             }
+        }
+
+        function goBack() {
+            if (currentScreen > 1) {
+                hideScreen(currentScreen);
+                currentScreen--;
+                showScreen(currentScreen);
+                updateNavigation();
+                updateProgress();
+            }
+        }
+
+        function showScreen(screenNumber) {
+            const screen = document.getElementById(`screen${screenNumber}`);
+            if (screen) {
+                screen.classList.add('active');
+            }
+        }
+
+        function hideScreen(screenNumber) {
+            const screen = document.getElementById(`screen${screenNumber}`);
+            if (screen) {
+                screen.classList.remove('active');
+            }
+        }
+
+        function updateNavigation() {
+            const backBtn = document.getElementById('backBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Back button
+            backBtn.disabled = currentScreen === 1;
+            
+            // Next button
+            nextBtn.disabled = !canProceed();
+            
+            // Update next button text for final screen
+            if (currentScreen === 6) {
+                nextBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = 'inline-flex';
+            }
+        }
+
+        function updateProgress() {
+            const progressFill = document.querySelector('.progress-fill');
+            const progressText = document.querySelector('.progress-text');
+            
+            const progressPercentage = (currentScreen / 6) * 100;
+            if (progressFill) {
+                progressFill.style.width = progressPercentage + '%';
+            }
+        }
+
+        function canProceed() {
+            switch (currentScreen) {
+                case 1:
+                    return selectedOption !== null;
+                case 2:
+                    return selectedDocument !== null;
+                case 3:
+                    return uploadedFile !== null;
+                case 4:
+                    return true; // Camera screen
+                case 5:
+                    return true; // Face verification
+                case 6:
+                    return false; // Final screen
+                default:
+                    return false;
+            }
+        }
+
+        function validateCurrentScreen() {
+            return canProceed();
+        }
+
+        // Option selection functions
+        function selectOption(element, option) {
+            // Remove previous selections
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            element.classList.add('selected');
+            selectedOption = option;
+            
+            updateNavigation();
+            
+            // Auto-proceed after a short delay
+            setTimeout(() => {
+                if (canProceed()) {
+                    goNext();
+                }
+            }, 500);
+        }
+
+        function selectDocument(docType, element) {
+            // Remove previous selections
+            document.querySelectorAll('#screen2 .option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            element.classList.add('selected');
+            selectedDocument = docType;
+            
+            updateNavigation();
+            
+            // Auto-proceed after a short delay
+            setTimeout(() => {
+                if (canProceed()) {
+                    goNext();
+                }
+            }, 500);
+        }
+
+        // File upload functions
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                uploadedFile = file;
+                showFilePreview(file);
+                updateSyncStatus('uploading', 'Uploading document...');
+                
+                // Simulate upload process
+                setTimeout(() => {
+                    updateSyncStatus('success', 'Document uploaded successfully');
+                    updateNavigation();
+                }, 2000);
+            } else {
+                alert('Please select a valid image file.');
+            }
+        }
+
+        function showFilePreview(file) {
+            const uploadArea = document.querySelector('.document-upload');
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                uploadArea.innerHTML = `
+                    <div class="upload-icon" style="background: #10b981;">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3>Document Uploaded</h3>
+                    <p>${file.name}</p>
+                    <img src="${e.target.result}" style="max-width: 200px; max-height: 150px; margin-top: 1rem; border-radius: 10px;">
+                `;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function updateSyncStatus(type, message) {
+            const syncStatus = document.getElementById('syncStatus');
+            const icons = {
+                'success': 'fa-check-circle',
+                'uploading': 'fa-spinner fa-spin',
+                'pending': 'fa-clock'
+            };
+            
+            syncStatus.className = `sync-status ${type}`;
+            syncStatus.innerHTML = `
+                <i class="fas ${icons[type]}"></i>
+                <span>${message}</span>
+            `;
+        }
+
+        // Camera functions
+        function openCamera() {
+            goNext(); // Go to camera screen
         }
 
         function captureDocument() {
-            const videoElement = document.getElementById('videoElement');
-            const canvas = document.getElementById('canvasElement');
-            const context = canvas.getContext('2d');
+            // Simulate document capture
+            updateSyncStatus('uploading', 'Processing document...');
+            
+            setTimeout(() => {
+                updateSyncStatus('success', 'Document captured successfully');
+                uploadedFile = 'captured_document.jpg';
+                goNext(); // Proceed to face verification
+            }, 2000);
+        }
 
-            if (videoElement.srcObject) {
-                canvas.width = videoElement.videoWidth;
-                canvas.height = videoElement.videoHeight;
-                context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-                const imageDataURL = canvas.toDataURL('image/jpeg');
-
-                // Simulate document upload
-                updateSyncStatus('uploading', 'Processing document...');
+        function startFaceVerification() {
+            // Simulate face verification process
+            const btn = event.target.closest('.capture-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.style.background = '#10b981';
                 
-                // Stop the camera stream immediately
-                stopCamera();
-
                 setTimeout(() => {
-                    const file = dataURLtoFile(imageDataURL, 'captured_document.jpg');
-                    uploadedFile = file;
-
-                    updateSyncStatus('success', 'Document captured successfully');
-                    goNext(); // Proceed to face verification
-                }, 2000);
-            } else {
-                alert("Camera is not active. Please open the camera first.");
-            }
+                    goNext(); // Proceed to completion screen
+                }, 1000);
+            }, 3000);
         }
-        
-        // A new function to stop all active video tracks from a stream
-        function stopCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => {
-                    track.stop();
+
+        // Drag and drop functionality
+        function setupDragAndDrop() {
+            const uploadArea = document.querySelector('.document-upload');
+            
+            if (uploadArea) {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, preventDefaults, false);
                 });
-                cameraStream = null;
+
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, highlight, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, unhighlight, false);
+                });
+
+                function highlight(e) {
+                    uploadArea.classList.add('dragover');
+                }
+
+                function unhighlight(e) {
+                    uploadArea.classList.remove('dragover');
+                }
+
+                uploadArea.addEventListener('drop', handleDrop, false);
+
+                function handleDrop(e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+
+                    if (files.length > 0) {
+                        const file = files[0];
+                        if (file.type.startsWith('image/')) {
+                            uploadedFile = file;
+                            showFilePreview(file);
+                            updateSyncStatus('uploading', 'Uploading document...');
+                            
+                            setTimeout(() => {
+                                updateSyncStatus('success', 'Document uploaded successfully');
+                                updateNavigation();
+                            }, 2000);
+                        }
+                    }
+                }
             }
         }
-        
-        // Helper function to convert data URL to a File object
-        function dataURLtoFile(dataurl, filename) {
-            const arr = dataurl.split(','),
-                mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[arr.length - 1]),
-                n = bstr.length,
-                u8arr = new Uint8Array(n);
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
+
+        // Voice control functions
+        function toggleVoice() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            
+            if (!isVoiceListening) {
+                startVoiceRecognition();
+                voiceBtn.classList.add('listening');
+                voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                isVoiceListening = true;
+            } else {
+                stopVoiceRecognition();
+                voiceBtn.classList.remove('listening');
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                isVoiceListening = false;
             }
-            return new File([u8arr], filename, { type: mime });
         }
 
+        function startVoiceRecognition() {
+            // Voice recognition would be implemented here
+            console.log('Voice recognition started');
+            
+            // Simulate voice command
+            setTimeout(() => {
+                alert('Voice command recognized: "Next step"');
+                if (canProceed()) {
+                    goNext();
+                }
+                toggleVoice();
+            }, 3000);
+        }
 
-        function startFaceVerification() {
-            // Stop the camera before starting face verification
-            stopCamera();
+        function stopVoiceRecognition() {
+            console.log('Voice recognition stopped');
+        }
 
-            // Simulate face verification process
-            const btn = event.target.closest('.capture-btn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fas fa-check"></i>';
-                btn.style.background = '#10b981';
-                
-                setTimeout(() => {
-                    goNext(); // Proceed to completion screen
-                }, 1000);
-            }, 3000);
-        }
+        // Chatbot functions
+        function toggleChatbot() {
+            const chatbot = document.getElementById('chatbotOverlay');
+            isChatbotOpen = !isChatbotOpen;
+            
+            if (isChatbotOpen) {
+                chatbot.classList.add('active');
+            } else {
+                chatbot.classList.remove('active');
+            }
+        }
 
-        // Drag and drop functionality
-        function setupDragAndDrop() {
-            const uploadArea = document.querySelector('.document-upload');
-            
-            if (uploadArea) {
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, preventDefaults, false);
-                });
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addChatMessage(message, 'user');
+                input.value = '';
+                
+                // Simulate bot response
+                setTimeout(() => {
+                    const botResponse = getBotResponse(message);
+                    addChatMessage(botResponse, 'bot');
+                }, 1000);
+            }
+        }
 
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
+        function handleChatEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
 
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, highlight, false);
-                });
+        function addChatMessage(message, type) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}`;
+            messageDiv.innerHTML = `<div>${message}</div>`;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
-                ['dragleave', 'drop'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, unhighlight, false);
-                });
+        function getBotResponse(message) {
+            const responses = {
+                'help': 'I can help you with the KYC process. What specific information do you need?',
+                'documents': 'You can use Aadhaar Card, PAN Card, or Passport for verification.',
+                'time': 'The verification process typically takes 24-48 hours.',
+                'status': 'You can check your application status from the main menu.',
+                'default': 'I understand you need help. Could you please be more specific about what you need assistance with?'
+            };
+            
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('help')) return responses.help;
+            if (lowerMessage.includes('document')) return responses.documents;
+            if (lowerMessage.includes('time') || lowerMessage.includes('long')) return responses.time;
+            if (lowerMessage.includes('status')) return responses.status;
+            
+            return responses.default;
+        }
 
-                function highlight(e) {
-                    uploadArea.classList.add('dragover');
-                }
+        // Completion screen functions
+        function goToHome() {
+            // Stop any active cameras
+            stopDocumentCamera();
+            stopFaceCamera();
+            
+            currentScreen = 1;
+            selectedOption = null;
+            selectedDocument = null;
+            uploadedFile = null;
+            
+            // Hide all screens and show first screen
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById('screen1').classList.add('active');
+            
+            // Reset all selections
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Reset upload area
+            const uploadArea = document.querySelector('.document-upload');
+            if (uploadArea) {
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Take Photo or Upload</h3>
+                    <p>Click here to capture or select document image</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                `;
+            }
+            
+            // Reset capture buttons
+            document.querySelectorAll('.capture-btn').forEach(btn => {
+                btn.innerHTML = '<i class="fas fa-camera"></i>';
+                btn.style.background = 'white';
+            });
+            
+            // Reset sync status
+            updateSyncStatus('success', 'Connected - Ready to proceed');
+            
+            updateNavigation();
+            updateProgress();
+        }
 
-                function unhighlight(e) {
-                    uploadArea.classList.remove('dragover');
-                }
-
-                uploadArea.addEventListener('drop', handleDrop, false);
-
-                function handleDrop(e) {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-
-                    if (files.length > 0) {
-                        const file = files[0];
-                        if (file.type.startsWith('image/')) {
-                            uploadedFile = file;
-                            showFilePreview(file);
-                            updateSyncStatus('uploading', 'Uploading document...');
-                            
-                            setTimeout(() => {
-                                updateSyncStatus('success', 'Document uploaded successfully');
-                                updateNavigation();
-                            }, 2000);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Voice control functions
-        function toggleVoice() {
-            const voiceBtn = document.getElementById('voiceBtn');
-            
-            if (!isVoiceListening) {
-                startVoiceRecognition();
-                voiceBtn.classList.add('listening');
-                voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
-                isVoiceListening = true;
-            } else {
-                stopVoiceRecognition();
-                voiceBtn.classList.remove('listening');
-                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-                isVoiceListening = false;
-            }
-        }
-
-        function startVoiceRecognition() {
-            // Voice recognition would be implemented here
-            console.log('Voice recognition started');
-            
-            // Simulate voice command
-            setTimeout(() => {
-                alert('Voice command recognized: "Next step"');
-                if (canProceed()) {
-                    goNext();
-                }
-                toggleVoice();
-            }, 3000);
-        }
-
-        function stopVoiceRecognition() {
-            console.log('Voice recognition stopped');
-        }
-
-        // Chatbot functions
-        function toggleChatbot() {
-            const chatbot = document.getElementById('chatbotOverlay');
-            isChatbotOpen = !isChatbotOpen;
-            
-            if (isChatbotOpen) {
-                chatbot.classList.add('active');
-            } else {
-                chatbot.classList.remove('active');
-            }
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            
-            if (message) {
-                addChatMessage(message, 'user');
-                input.value = '';
-                
-                // Simulate bot response
-                setTimeout(() => {
-                    const botResponse = getBotResponse(message);
-                    addChatMessage(botResponse, 'bot');
-                }, 1000);
-            }
-        }
-
-        function handleChatEnter(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        function addChatMessage(message, type) {
-            const chatMessages = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `chat-message ${type}`;
-            messageDiv.innerHTML = `<div>${message}</div>`;
-            
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function getBotResponse(message) {
-            const responses = {
-                'help': 'I can help you with the KYC process. What specific information do you need?',
-                'documents': 'You can use Aadhaar Card, PAN Card, or Passport for verification.',
-                'time': 'The verification process typically takes 24-48 hours.',
-                'status': 'You can check your application status from the main menu.',
-                'default': 'I understand you need help. Could you please be more specific about what you need assistance with?'
-            };
-            
-            const lowerMessage = message.toLowerCase();
-            
-            if (lowerMessage.includes('help')) return responses.help;
-            if (lowerMessage.includes('document')) return responses.documents;
-            if (lowerMessage.includes('time') || lowerMessage.includes('long')) return responses.time;
-            if (lowerMessage.includes('status')) return responses.status;
-            
-            return responses.default;
-        }
-
-        // Completion screen functions
-        function goToHome() {
-            // Stop any active cameras
-            stopCamera();
-            
-            currentScreen = 1;
-            selectedOption = null;
-            selectedDocument = null;
-            uploadedFile = null;
-            
-            // Hide all screens and show first screen
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById('screen1').classList.add('active');
-            
-            // Reset all selections
-            document.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Reset upload area
-            const uploadArea = document.querySelector('.document-upload');
-            if (uploadArea) {
-                uploadArea.innerHTML = `
-                    <div class="upload-icon">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <h3>Take Photo or Upload</h3>
-                    <p>Click here to capture or select document image</p>
-                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-                `;
-            }
-            
-            // Reset capture buttons
-            document.querySelectorAll('.capture-btn').forEach(btn => {
-                btn.innerHTML = '<i class="fas fa-camera"></i>';
-                btn.style.background = 'white';
-            });
-            
-            // Reset sync status
-            updateSyncStatus('success', 'Connected - Ready to proceed');
-            
-            updateNavigation();
-            updateProgress();
-        }
-
-        function shareResult() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Bharat KYC Verification Complete',
-                    text: 'I have successfully completed my KYC verification with Bharat KYC platform.',
-                    url: window.location.href
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                const text = 'I have successfully completed my KYC verification with Bharat KYC platform.';
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('Status copied to clipboard!');
-                });
-            }
-        }
-
-        // Listen for screen changes to stop camera
-        window.addEventListener('popstate', stopCamera);
-        window.addEventListener('beforeunload', stopCamera);
-
-    </script>
+        function shareResult() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Bharat KYC Verification Complete',
+                    text: 'I have successfully completed my KYC verification with Bharat KYC platform.',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const text = 'I have successfully completed my KYC verification with Bharat KYC platform.';
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Status copied to clipboard!');
+                });
+            }
+        }
+    </script>
 </body>
 </html>
