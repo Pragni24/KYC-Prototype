@@ -860,6 +860,7 @@
                             Share Status
                         </button>
                     </div>
+                </div>
             </div>
         </div>
 
@@ -1147,6 +1148,7 @@
                 placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i>
                                          <div style="font-size: 1.5rem; margin-top: 1rem;">Camera Error</div>
                                          <div style="font-size: 1rem; margin-top: 0.5rem; opacity: 0.8;">${error.name}: ${error.message}</div>`;
+                // Set uploadedFile to null to prevent proceeding if camera fails
                 uploadedFile = null;
                 updateNavigation();
             }
@@ -1244,6 +1246,14 @@
                 ['dragleave', 'drop'].forEach(eventName => {
                     uploadArea.addEventListener(eventName, unhighlight, false);
                 });
+
+                function highlight(e) {
+                    uploadArea.classList.add('dragover');
+                }
+
+                function unhighlight(e) {
+                    uploadArea.classList.remove('dragover');
+                }
 
                 uploadArea.addEventListener('drop', handleDrop, false);
 
@@ -1370,25 +1380,24 @@
         function goToHome() {
             // Stop any active cameras
             stopCamera();
-
-            // Reset global state variables
+            
             currentScreen = 1;
             selectedOption = null;
             selectedDocument = null;
             uploadedFile = null;
-
+            
             // Hide all screens and show first screen
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
             document.getElementById('screen1').classList.add('active');
-
-            // Reset all selected cards and update the DOM
+            
+            // Reset all selections
             document.querySelectorAll('.option-card').forEach(card => {
                 card.classList.remove('selected');
             });
-
-            // Reset upload area to its original state
+            
+            // Reset upload area
             const uploadArea = document.querySelector('.document-upload');
             if (uploadArea) {
                 uploadArea.innerHTML = `
@@ -1400,9 +1409,16 @@
                     <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
                 `;
             }
-
-            // Reset progress and navigation
+            
+            // Reset capture buttons
+            document.querySelectorAll('.capture-btn').forEach(btn => {
+                btn.innerHTML = '<i class="fas fa-camera"></i>';
+                btn.style.background = 'white';
+            });
+            
+            // Reset sync status
             updateSyncStatus('success', 'Connected - Ready to proceed');
+            
             updateNavigation();
             updateProgress();
         }
